@@ -1,7 +1,7 @@
 package com.rvk.skycommerce.api.mapper;
 
-import com.rvk.skycommerce.api.dto.IndividualClientResponse;
-import com.rvk.skycommerce.api.dto.ProfessionalClientResponse;
+import com.rvk.skycommerce.api.dto.client.IndividualClientResponse;
+import com.rvk.skycommerce.api.dto.client.ProfessionalClientResponse;
 import com.rvk.skycommerce.model.IndividualClientModel;
 import com.rvk.skycommerce.model.ProfessionalClientModel;
 

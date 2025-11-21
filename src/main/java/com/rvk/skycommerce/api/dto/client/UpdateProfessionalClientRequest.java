@@ -1,4 +1,4 @@
-package com.rvk.skycommerce.api.dto;
+package com.rvk.skycommerce.api.dto.client;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

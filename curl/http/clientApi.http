@@ -1,0 +1,70 @@
+@host = http://localhost:8080
+@adminAuth = Basic YWRtaW46YWRtaW4=
+## Basic YWRtaW46YWRtaW4= == admin:admin user:password base64 encoding
+
+
+### get all individual clients
+GET {{host}}/api/clients/individual?page=0&size=20
+Authorization: {{adminAuth}}
+
+### get all professional clients
+GET {{host}}/api/clients/professional?page=0&size=20
+Authorization: {{adminAuth}}
+
+### gtet individual client by id
+GET {{host}}/api/clients/individual/C_IND_001
+Authorization: {{adminAuth}}
+
+### get professional client by id
+GET {{host}}/api/clients/professional/C_PRO_LOW_001
+Authorization: {{adminAuth}}
+
+
+
+### create individual client
+POST {{host}}/api/clients/individual
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "firstName": "Johnny ",
+  "lastName": "Depp"
+}
+
+### create professional client
+POST {{host}}/api/clients/professional
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "companyName": "Apple Inc",
+  "registrationNumber": "REG-001",
+  "annualRevenue": 10000000.00,
+  "vatNumber": "EU123456789"
+}
+
+### update individual client
+PUT {{host}}/api/clients/individual/C_IND_001
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "firstName": "JohnUpdated",
+  "lastName": "DoeUpdated"
+}
+
+### update professional client
+PUT {{host}}/api/clients/professional/C_PRO_LOW_001
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "companyName": "Acme Solutions Updated",
+  "registrationNumber": "REG-LOW-001",
+  "annualRevenue": 6000000.00,
+  "vatNumber": "EU123456789"
+}
+
+
+
+

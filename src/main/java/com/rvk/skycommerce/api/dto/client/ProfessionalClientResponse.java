@@ -1,4 +1,4 @@
-package com.rvk.skycommerce.api.dto;
+package com.rvk.skycommerce.api.dto.client;
 
 import lombok.Builder;
 import lombok.Value;

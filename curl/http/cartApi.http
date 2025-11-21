@@ -1,0 +1,42 @@
+@host = http://localhost:8080
+@adminAuth = Basic YWRtaW46YWRtaW4=
+## Basic YWRtaW46YWRtaW4= == admin:admin user:password base64 encoding
+
+### create a new cart for client
+POST {{host}}/api/carts?clientId=C_IND_001
+Authorization: {{adminAuth}}
+
+### get cart by id
+GET {{host}}/api/carts/1
+Authorization: {{adminAuth}}
+
+### add items to cart
+POST {{host}}/api/carts/1/items
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "productType": "HIGH_END_PHONE",
+      "quantity": 1
+    },
+    {
+      "productType": "LAPTOP",
+      "quantity": 2
+    }
+  ]
+}
+
+### update item quantity in cart
+PUT {{host}}/api/carts/1/items/1
+Authorization: {{adminAuth}}
+Content-Type: application/json
+
+{
+  "quantity": 3
+}
+
+### remove item from cart
+DELETE {{host}}/api/carts/1/items/1
+Authorization: {{adminAuth}}

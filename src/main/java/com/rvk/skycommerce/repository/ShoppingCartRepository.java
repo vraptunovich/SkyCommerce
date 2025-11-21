@@ -14,7 +14,7 @@ public interface ShoppingCartRepository extends JpaRepository<ShoppingCart, Long
 
     Optional<ShoppingCart> findByClient_Id(String clientId);
 
-    @EntityGraph(attributePaths = "items")
+    @EntityGraph(attributePaths = {"client", "items"})
     @Query("select c from ShoppingCart c where c.id = :id")
     Optional<ShoppingCart> findByIdWithItems(@Param("id") Long id);
 }

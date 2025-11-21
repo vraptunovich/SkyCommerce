@@ -9,8 +9,12 @@ skycommerce:
       ttl: 10m
       max-size: 1000
 spring:
+  profiles:
+    active: dev
+    config:
+      import: "optional:bootstrap-docker.yml"
   config:
-    import: classpath:pricing.yml
+    import: "classpath:pricing.yml"
   application:
     name: SkyCommerce
   datasource:
@@ -40,3 +44,25 @@ spring:
     caffeine:
       spec: expireAfterWrite=10m,maximumSize=1000
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+
+logging:
+  level:
+    org:
+      springframework:
+        jdbc: DEBUG
+        security: WARN
+      hibernate:
+        SQL: DEBUG
+        type:
+        descriptor:
+          sql:
+          BasicBinder: TRACE

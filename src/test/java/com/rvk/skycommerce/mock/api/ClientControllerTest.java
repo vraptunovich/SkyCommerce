@@ -2,10 +2,11 @@ package com.rvk.skycommerce.mock.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rvk.skycommerce.api.ClientController;
-import com.rvk.skycommerce.api.dto.CreateIndividualClientRequest;
-import com.rvk.skycommerce.api.dto.CreateProfessionalClientRequest;
-import com.rvk.skycommerce.api.dto.UpdateIndividualClientRequest;
-import com.rvk.skycommerce.api.dto.UpdateProfessionalClientRequest;
+import com.rvk.skycommerce.api.dto.client.CreateIndividualClientRequest;
+import com.rvk.skycommerce.api.dto.client.CreateProfessionalClientRequest;
+import com.rvk.skycommerce.api.dto.client.UpdateIndividualClientRequest;
+import com.rvk.skycommerce.api.dto.client.UpdateProfessionalClientRequest;
+import com.rvk.skycommerce.config.SecurityConfig;
 import com.rvk.skycommerce.model.IndividualClientModel;
 import com.rvk.skycommerce.model.ProfessionalClientModel;
 import com.rvk.skycommerce.service.ClientService;
@@ -13,9 +14,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -30,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ClientController.class)
+@WithMockUser(roles = "ADMIN")
+@Import(SecurityConfig.class)
 class ClientControllerTest {
 
     @Autowired
@@ -63,6 +68,7 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.id", is("IND-1")))
                 .andExpect(jsonPath("$.firstName", is("John")))
                 .andExpect(jsonPath("$.lastName", is("Doe")));
+
     }
 
     @Test

@@ -1,0 +1,39 @@
+1. C_IND_001
+id: C_IND_001
+client_type: INDIVIDUAL
+first_name: John
+last_name: Doe
+company_name: NULL
+vat_number: NULL
+registration_number: NULL
+annual_revenue: NULL
+
+2. C_IND_002
+id: C_IND_002
+client_type: INDIVIDUAL
+first_name: Anna
+last_name: Smith
+company_name: NULL
+vat_number: NULL
+registration_number: NULL
+annual_revenue: NULL
+
+3. C_PRO_LOW_001
+id: C_PRO_LOW_001
+client_type: PROFESSIONAL
+first_name: NULL
+last_name: NULL
+company_name: Acme Solutions
+vat_number: EU123456789
+registration_number: REG-LOW-001
+annual_revenue: 5,000,000.00
+
+4. C_PRO_HIGH_001
+id: C_PRO_HIGH_001
+client_type: PROFESSIONAL
+first_name: NULL
+last_name: NULL
+company_name: MegaCorp International
+vat_number: EU987654321
+registration_number: REG-HIGH-001
+annual_revenue: 15,000,000.00
