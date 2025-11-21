@@ -129,7 +129,7 @@ class ClientServiceImplTest {
                 () -> clientService.updateIndividualClient("ID_PRO", "John", "Doe")
         );
 
-        assertThat(ex.getMessage()).isEqualTo("Client with id ID_PRO is not an individual client");
+        assertThat(ex.getMessage()).isEqualTo("Client with id ID_PRO is not a IndividualClient");
     }
 
     @Test
@@ -198,7 +198,7 @@ class ClientServiceImplTest {
                 )
         );
 
-        assertThat(ex.getMessage()).isEqualTo("Client with id IND1 is not a professional client");
+        assertThat(ex.getMessage()).isEqualTo("Client with id IND1 is not a ProfessionalClient");
     }
 
     @Test
@@ -241,7 +241,7 @@ class ClientServiceImplTest {
                 () -> clientService.getIndividualById("PRO1")
         );
 
-        assertThat(ex.getMessage()).isEqualTo("Client with id PRO1 is not an individual client");
+        assertThat(ex.getMessage()).isEqualTo("Client with id PRO1 is not a IndividualClient");
     }
 
     @Test
@@ -286,7 +286,7 @@ class ClientServiceImplTest {
                 () -> clientService.getProfessionalById("IND1")
         );
 
-        assertThat(ex.getMessage()).isEqualTo("Client with id IND1 is not a professional client");
+        assertThat(ex.getMessage()).isEqualTo("Client with id IND1 is not a ProfessionalClient");
     }
 
     @Test

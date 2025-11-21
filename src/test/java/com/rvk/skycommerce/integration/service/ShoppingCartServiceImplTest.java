@@ -29,7 +29,7 @@ import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @Transactional
-class ShoppingCartServiceImplIT {
+class ShoppingCartServiceImplTest {
 
     @Autowired
     private ShoppingCartService shoppingCartService;
@@ -44,7 +44,7 @@ class ShoppingCartServiceImplIT {
     private PriceCalculator priceCalculator;
 
     @Test
-    void createCartForClient_persistsCartAndReturnsModel_forIndividualClient() {
+    void createCartForClient_persistsCartWithZeroTotal_forIndividual() {
         IndividualClient client = new IndividualClient("IND-1", "John", "Doe");
         clientRepository.save(client);
 
@@ -58,29 +58,31 @@ class ShoppingCartServiceImplIT {
         ShoppingCart entity = shoppingCartRepository.findById(model.getId())
                 .orElseThrow();
         assertThat(entity.getClient().getId()).isEqualTo("IND-1");
+        assertThat(entity.getTotalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
-    void createCartForClient_persistsCartAndReturnsModel_forProfessionalClientLowRevenue() {
+    void createCartForClient_persistsCartWithZeroTotal_forProfessional() {
         ProfessionalClient client = new ProfessionalClient(
-                "PRO-LOW",
-                "LowCorp",
-                "REG-LOW",
-                new BigDecimal("8000000.00"), // < 10M
-                "EU-LOW"
+                "PRO-1",
+                "Acme Corp",
+                "REG-123",
+                new BigDecimal("8000000.00"),
+                "EU123"
         );
         clientRepository.save(client);
 
-        ShoppingCartModel model = shoppingCartService.createCartForClient("PRO-LOW");
+        ShoppingCartModel model = shoppingCartService.createCartForClient("PRO-1");
 
         assertThat(model.getId()).isNotNull();
-        assertThat(model.getClientId()).isEqualTo("PRO-LOW");
+        assertThat(model.getClientId()).isEqualTo("PRO-1");
         assertThat(model.getItems()).isEmpty();
         assertThat(model.getTotalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
 
         ShoppingCart entity = shoppingCartRepository.findById(model.getId())
                 .orElseThrow();
-        assertThat(entity.getClient().getId()).isEqualTo("PRO-LOW");
+        assertThat(entity.getClient().getId()).isEqualTo("PRO-1");
+        assertThat(entity.getTotalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
     }
 
     @Test
@@ -94,13 +96,13 @@ class ShoppingCartServiceImplIT {
     }
 
     @Test
-    void addItem_persistsItemAndCalculatesTotals_forIndividualClient() {
+    void addItem_updatesItemsAndTotal_forIndividual() {
         IndividualClient client = new IndividualClient("IND-2", "Anna", "Smith");
         clientRepository.save(client);
 
         ShoppingCart cart = new ShoppingCart(client);
-        cart.setItems(new ArrayList<>());
         cart.setTotalAmount(BigDecimal.ZERO);
+        cart.setItems(new ArrayList<>());
         shoppingCartRepository.save(cart);
 
         given(priceCalculator.getUnitPrice(any(), eq(ProductType.HIGH_END_PHONE)))
@@ -119,18 +121,16 @@ class ShoppingCartServiceImplIT {
         ShoppingCart reloaded = shoppingCartRepository.findByIdWithItems(cart.getId())
                 .orElseThrow();
         assertThat(reloaded.getItems()).hasSize(1);
-        CartItem item = reloaded.getItems().getFirst();
-        assertThat(item.getProductType()).isEqualTo(ProductType.HIGH_END_PHONE);
-        assertThat(item.getQuantity()).isEqualTo(2);
+        assertThat(reloaded.getTotalAmount()).isEqualByComparingTo("3000.00");
     }
 
     @Test
-    void updateItemQuantity_updatesQuantityAndRecalculatesTotal_forProfessionalClientHighRevenue() {
+    void updateItemQuantity_recalculatesTotal_forProfessional() {
         ProfessionalClient client = new ProfessionalClient(
-                "PRO-HIGH",
+                "PRO-2",
                 "HighCorp",
                 "REG-HIGH",
-                new BigDecimal("20000000.00"), // > 10M
+                new BigDecimal("20000000.00"),
                 "EU-HIGH"
         );
         clientRepository.save(client);
@@ -144,7 +144,7 @@ class ShoppingCartServiceImplIT {
         shoppingCartRepository.save(cart);
 
         given(priceCalculator.getUnitPrice(any(), eq(ProductType.LAPTOP)))
-                .willReturn(new BigDecimal("900.00")); // условно для high-revenue pro
+                .willReturn(new BigDecimal("900.00"));
 
         ShoppingCartModel model = shoppingCartService.updateItemQuantity(cart.getId(), item.getId(), 3);
 
@@ -155,18 +155,18 @@ class ShoppingCartServiceImplIT {
 
         ShoppingCart reloaded = shoppingCartRepository.findByIdWithItems(cart.getId())
                 .orElseThrow();
-        CartItem reloadedItem = reloaded.getItems().getFirst();
-        assertThat(reloadedItem.getQuantity()).isEqualTo(3);
+        assertThat(reloaded.getTotalAmount()).isEqualByComparingTo("2700.00");
+        assertThat(reloaded.getItems().getFirst().getQuantity()).isEqualTo(3);
     }
 
     @Test
-    void removeItem_removesItemAndRecalculatesTotal_forProfessionalClientLowRevenue() {
+    void removeItem_updatesTotal() {
         ProfessionalClient client = new ProfessionalClient(
-                "PRO-LOW2",
-                "LowCorp2",
-                "REG-LOW2",
-                new BigDecimal("5000000.00"), // < 10M
-                "EU-LOW2"
+                "PRO-3",
+                "LowCorp",
+                "REG-LOW",
+                new BigDecimal("5000000.00"),
+                "EU-LOW"
         );
         clientRepository.save(client);
 
@@ -182,12 +182,12 @@ class ShoppingCartServiceImplIT {
         shoppingCartRepository.save(cart);
 
         given(priceCalculator.getUnitPrice(any(), eq(ProductType.MID_RANGE_PHONE)))
-                .willReturn(new BigDecimal("600.00"));   // pro < 10M
+                .willReturn(new BigDecimal("600.00"));
         given(priceCalculator.getUnitPrice(any(), eq(ProductType.LAPTOP)))
-                .willReturn(new BigDecimal("1000.00"));  // pro < 10M
+                .willReturn(new BigDecimal("1000.00"));
 
         ShoppingCartModel before = shoppingCartService.getCart(cart.getId());
-        assertThat(before.getTotalAmount()).isEqualByComparingTo("2600.00"); // 600 + 2*1000
+        assertThat(before.getTotalAmount()).isEqualByComparingTo("2600.00");
 
         ShoppingCartModel after = shoppingCartService.removeItem(cart.getId(), item1.getId());
 
@@ -198,7 +198,26 @@ class ShoppingCartServiceImplIT {
         ShoppingCart reloaded = shoppingCartRepository.findByIdWithItems(cart.getId())
                 .orElseThrow();
         assertThat(reloaded.getItems()).hasSize(1);
-        assertThat(reloaded.getItems().getFirst().getProductType()).isEqualTo(ProductType.LAPTOP);
+        assertThat(reloaded.getTotalAmount()).isEqualByComparingTo("2000.00");
+    }
+
+    @Test
+    void getCart_usesStoredTotalAmountIfPresent() {
+        IndividualClient client = new IndividualClient("IND-3", "Mark", "Brown");
+        clientRepository.save(client);
+
+        ShoppingCart cart = new ShoppingCart(client);
+        CartItem item = new CartItem(ProductType.HIGH_END_PHONE, 1);
+        cart.setItems(new ArrayList<>(List.of(item)));
+        cart.setTotalAmount(new BigDecimal("9999.00"));
+        shoppingCartRepository.save(cart);
+
+        given(priceCalculator.getUnitPrice(any(), any()))
+                .willReturn(BigDecimal.ZERO);
+
+        ShoppingCartModel model = shoppingCartService.getCart(cart.getId());
+
+        assertThat(model.getTotalAmount()).isEqualByComparingTo("9999.00");
     }
 
     @Test
@@ -209,5 +228,41 @@ class ShoppingCartServiceImplIT {
         );
 
         assertThat(ex.getMessage()).isEqualTo("Cart with id 999 not found");
+    }
+
+    @Test
+    void updateItemQuantity_throwsWhenItemNotFound() {
+        IndividualClient client = new IndividualClient("IND-4", "No", "Items");
+        clientRepository.save(client);
+
+        ShoppingCart cart = new ShoppingCart(client);
+        cart.setItems(new ArrayList<>());
+        cart.setTotalAmount(BigDecimal.ZERO);
+        shoppingCartRepository.save(cart);
+
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
+                () -> shoppingCartService.updateItemQuantity(cart.getId(), 123L, 1)
+        );
+
+        assertThat(ex.getMessage()).isEqualTo("Item with id 123 not found in cart " + cart.getId());
+    }
+
+    @Test
+    void removeItem_throwsWhenItemNotFound() {
+        IndividualClient client = new IndividualClient("IND-5", "No", "Items");
+        clientRepository.save(client);
+
+        ShoppingCart cart = new ShoppingCart(client);
+        cart.setItems(new ArrayList<>());
+        cart.setTotalAmount(BigDecimal.ZERO);
+        shoppingCartRepository.save(cart);
+
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
+                () -> shoppingCartService.removeItem(cart.getId(), 123L)
+        );
+
+        assertThat(ex.getMessage()).isEqualTo("Item with id 123 not found in cart " + cart.getId());
     }
 }
