@@ -1,0 +1,20 @@
+pricing:
+  individual:
+    HIGH_END_PHONE: 1500
+    MID_RANGE_PHONE: 800
+    LAPTOP: 1200
+
+  professional:
+    lowRevenue:
+      maxRevenueInclusive: 10000000
+      products:
+        HIGH_END_PHONE: 1150
+        MID_RANGE_PHONE: 600
+        LAPTOP: 1000
+
+    highRevenue:
+      minRevenueExclusive: 10000000
+      products:
+        HIGH_END_PHONE: 1000
+        MID_RANGE_PHONE: 550
+        LAPTOP: 900

@@ -1,0 +1,42 @@
+skycommerce:
+  pricing:
+    mode: yaml
+  cache:
+    shopping-carts:
+      ttl: 30m
+      max-size: 10000
+    price-rules:
+      ttl: 10m
+      max-size: 1000
+spring:
+  config:
+    import: classpath:pricing.yml
+  application:
+    name: SkyCommerce
+  datasource:
+    url: jdbc:h2:mem:skycommerce;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: admin
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  cache:
+    type: caffeine
+    cache-names:
+      - priceRules
+    caffeine:
+      spec: expireAfterWrite=10m,maximumSize=1000
+
