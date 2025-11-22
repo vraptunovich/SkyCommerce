@@ -25,6 +25,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @Slf4j
 public class SecurityConfig {
 
+
+    //No Vault or external secret storage is used —
+    // credentials are stored in plain configuration only for demonstration
+
     @Value("${app.security.admin.username:admin}")
     private String adminUsername;
 
