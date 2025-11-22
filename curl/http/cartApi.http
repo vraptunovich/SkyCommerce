@@ -1,18 +1,21 @@
 @host = http://localhost:8080
-@adminAuth = Basic YWRtaW46YWRtaW4=
-## Basic YWRtaW46YWRtaW4= == admin:admin user:password base64 encoding
+## @auth = Basic YWRtaW46YWRtaW4=
+## Basic YWRtaW46YWRtaW4= == admin:admin  base64 encoding
+
+@auth = Basic dXNlcjp1c2Vy
+## Basic dXNlcjp1c2Vy == user:user base64 encoding
 
 ### create a new cart for client
 POST {{host}}/api/carts?clientId=C_IND_001
-Authorization: {{adminAuth}}
+Authorization: {{auth}}
 
 ### get cart by id
 GET {{host}}/api/carts/1
-Authorization: {{adminAuth}}
+Authorization: {{auth}}
 
 ### add items to cart
 POST {{host}}/api/carts/1/items
-Authorization: {{adminAuth}}
+Authorization: {{auth}}
 Content-Type: application/json
 
 {
@@ -30,7 +33,7 @@ Content-Type: application/json
 
 ### update item quantity in cart
 PUT {{host}}/api/carts/1/items/1
-Authorization: {{adminAuth}}
+Authorization: {{auth}}
 Content-Type: application/json
 
 {
@@ -39,4 +42,4 @@ Content-Type: application/json
 
 ### remove item from cart
 DELETE {{host}}/api/carts/1/items/1
-Authorization: {{adminAuth}}
+Authorization: {{auth}}
